@@ -1,0 +1,71 @@
+package com.asknsolve.stopwatch
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import com.asknsolve.stopwatch.databinding.ActivityMainBinding
+import java.util.*
+import kotlin.concurrent.timer
+
+class MainActivity : AppCompatActivity() {
+    // binding
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    // 초기화
+    private var time = 0
+    private var isRunning = false
+
+    // timerTask 변수를 null을 허용하는 Timer 타입으로 선언
+    private var timerTask: Timer? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+
+        binding.fab.setOnClickListener {
+            //
+            isRunning = !isRunning
+
+            //
+            if(isRunning) {
+                start()
+            } else {
+                pause()
+            }
+        }
+    }
+
+
+    private fun start() {
+        // 타이머가 시작되면 FAB의 이미지를 일시정지 이미지로 변경
+        binding.fab.setImageResource(R.drawable.ic_baseline_pause_24)
+
+        // 0.01초마다 시간을 증가시키면서 UI 갱신
+        // timer를 취소하려면 timer를 실행하고 반환되는 Timer 객체를 변수에 저장해 둘 필요가 있음
+        // 이를 위해 timerTask 변수를 null을 허용하는 Timer 타입으로 선언
+        timerTask = timer(period = 10) {
+            // 시간 증가, 0.01초마다 1씩
+            time++
+
+            // time이 100이 되면 1초, 200은 2초, 258은 2.58초이므로
+            // time을 100으로 나누면 몫은 sec, 나머지는 milli
+            val sec = time / 100
+            val milli = time % 100
+
+            // UI 갱신
+            // timer는 워커 스레드에서 동작하여 UI 조작이 불가하므로 runOnUiThread로 감싸서 UI 조작이 가능하게
+            runOnUiThread {
+                binding.secTextView.text = "$sec"
+                binding.milliTextView.text = "$milli"
+            }
+        }
+    }
+
+    private fun pause(){
+        // FAB의 이미지를 시작 이미지로 변경
+        binding.fab.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+        // 실행 중인 타이머가 있다면 타이머를 취소
+        timerTask?.cancel()
+    }
+}
