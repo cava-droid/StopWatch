@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity() {
         binding.lapButton.setOnClickListener {
             recordLapTime()
         }
+
+        binding.resetFab.setOnClickListener {
+            reset()
+        }
     }
 
 
@@ -86,10 +90,10 @@ class MainActivity : AppCompatActivity() {
         val lapTime = this.time
         // 동적으로 TextView를 생성하여 텍스트 값 설정
         val textView = TextView(this)
-        textView.text = "$lap LAB : ${lapTime / 100}.${lapTime % 100}"
+        textView.text = "$lap LAP : ${lapTime / 100}.${lapTime % 100}"
 
         // 맨 위에 랩타임 추가
-        binding.lapLayout.addView(textView, lap)
+        binding.lapLayout.addView(textView, lap - 1)
         lap++
 
         // lapTime 값 설정에는 문제 없음
@@ -97,5 +101,21 @@ class MainActivity : AppCompatActivity() {
         // addView에도 문제 없었음
         // lapLayout의 width를 0dp에서 match_parent로 바꿔주니까 해결됨
         // Log.d("textview", "textView = ${textView.text}")
+    }
+
+    private fun reset(){
+        // 실행 중인 타이머가 있다면 취소
+        timerTask?.cancel()
+
+        // 모든 변수와 화면에 표시되는 것 초기화
+        time = 0
+        isRunning = false
+        binding.fab.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+        binding.secTextView.text = "0"
+        binding.milliTextView.text = "00"
+
+        // 모든 랩타임 제거
+        binding.lapLayout.removeAllViews()
+        lap = 1
     }
 }
