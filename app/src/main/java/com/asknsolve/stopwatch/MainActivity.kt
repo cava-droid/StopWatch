@@ -1,9 +1,9 @@
 package com.asknsolve.stopwatch
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.asknsolve.stopwatch.databinding.ActivityMainBinding
 import java.util.*
 import kotlin.concurrent.timer
@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         timerTask?.cancel()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun recordLapTime(){
         // 현재 시간을 지역변수에 저장
         val lapTime = this.time
@@ -88,10 +89,13 @@ class MainActivity : AppCompatActivity() {
         textView.text = "$lap LAB : ${lapTime / 100}.${lapTime % 100}"
 
         // 맨 위에 랩타임 추가
-        binding.lapLayout.addView(textView, 0)
+        binding.lapLayout.addView(textView, lap)
         lap++
 
         // lapTime 값 설정에는 문제 없음
         // Log.d("lap", "laptime = ${lapTime}")
+        // addView에도 문제 없었음
+        // lapLayout의 width를 0dp에서 match_parent로 바꿔주니까 해결됨
+        // Log.d("textview", "textView = ${textView.text}")
     }
 }
